@@ -59,8 +59,8 @@ public class VariantConfiguration implements Map<Object, Boolean> {
 
     @Override
     public void putAll(Map<?, ? extends Boolean> map) {
-        for(Entry<?, ? extends Boolean> entry : map.entrySet()) {
-            if(!(entry.getKey() instanceof Feature)) {
+        for (Entry<?, ? extends Boolean> entry : map.entrySet()) {
+            if (!(entry.getKey() instanceof Feature)) {
                 throw new IllegalArgumentException("VariantConfigurations must hold features");
             }
             this.featureAssignment.put(entry.getKey(), entry.getValue());

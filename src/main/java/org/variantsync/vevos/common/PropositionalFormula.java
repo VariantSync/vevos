@@ -19,6 +19,12 @@ public class PropositionalFormula {
         }
     }
 
+    public static PropositionalFormula fromString(String formula) {
+        final NodeReader nodeReader = new NodeReader();
+        nodeReader.activateJavaSymbols(); // select the symbols used for parsing conjunction (&&), disjunction (||), ...
+        return new PropositionalFormula(nodeReader.stringToNode(formula));
+    }
+
     public PropositionalFormula asNegated() {
         return new PropositionalFormula(new Not(this.node));
     }
@@ -29,12 +35,6 @@ public class PropositionalFormula {
 
     public PropositionalFormula or(PropositionalFormula other) {
         return new PropositionalFormula(new Or(this.node, other.node));
-    }
-
-    public static PropositionalFormula fromString(String formula) {
-        final NodeReader nodeReader = new NodeReader();
-        nodeReader.activateJavaSymbols(); // select the symbols used for parsing conjunction (&&), disjunction (||), ...
-        return new PropositionalFormula(nodeReader.stringToNode(formula));
     }
 
     public boolean evaluate(Map<Object, Boolean> featureAssignment) {
