@@ -3,14 +3,12 @@ package org.variantsync.vevos.extraction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.variantsync.vevos.VEVOS;
+import org.variantsync.vevos.common.Feature;
 import org.variantsync.vevos.common.FileGT;
 import org.variantsync.vevos.common.PropositionalFormula;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 public class ExtractionTest {
@@ -118,28 +116,27 @@ public class ExtractionTest {
     }
 
     @Test
-    public void filePresenceConditions() {
-
-    }
-
-    @Test
-    public void fileFeatureMappings() {
-
-    }
-
-    @Test
     public void fileCodeMatching() {
 
     }
 
     @Test
-    public void fileGroundTruth() {
-
+    public void fileFeaturesIfElse() {
+        FileGT fileGT = VEVOS.extractFileGT(NESTED_IF_PATH);
+        Set<Feature> features = fileGT.features();
+        Assertions.assertEquals(1, features.size());
+        features.forEach(f -> Assertions.assertEquals(new Feature("A"), f));
     }
 
     @Test
-    public void fileFeatures() {
-
+    public void fileFeaturesNestedIf() {
+        FileGT fileGT = VEVOS.extractFileGT(NESTED_IF_PATH);
+        Set<Feature> features = fileGT.features();
+        Set<Feature> expectedFeatures = new HashSet<>();
+        expectedFeatures.add(new Feature("A"));
+        expectedFeatures.add(new Feature("B"));
+        Assertions.assertTrue(features.containsAll(expectedFeatures));
+        Assertions.assertTrue(expectedFeatures.containsAll(features));
     }
 
     @Test
