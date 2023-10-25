@@ -7,29 +7,13 @@ import org.variantsync.vevos.common.FileGT;
 import org.variantsync.vevos.common.PropositionalFormula;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 public class ExtractionTest {
-        private static final Path IF_ELSE_PATH = Path.of("src/test/resources/extraction/ifelse.source");
-        private static final Map<Integer, PropositionalFormula> IF_ELSE_PCs;
-
-    static {
-        IF_ELSE_PCs = new HashMap<>();
-        IF_ELSE_PCs.put(0, PropositionalFormula.fromLiteral(true));
-        IF_ELSE_PCs.put(1, PropositionalFormula.fromLiteral(true));
-        IF_ELSE_PCs.put(2, PropositionalFormula.fromLiteral(true));
-        IF_ELSE_PCs.put(3, PropositionalFormula.fromLiteral(true));
-        IF_ELSE_PCs.put(4, PropositionalFormula.fromLiteral(true));
-        IF_ELSE_PCs.put(5, PropositionalFormula.fromString("A"));
-        IF_ELSE_PCs.put(6, PropositionalFormula.fromString("A"));
-        IF_ELSE_PCs.put(7, PropositionalFormula.fromString("!A"));
-        IF_ELSE_PCs.put(8, PropositionalFormula.fromString("!A"));
-        IF_ELSE_PCs.put(9, PropositionalFormula.fromString("A"));
-        IF_ELSE_PCs.put(10, PropositionalFormula.fromLiteral(true));
-        IF_ELSE_PCs.put(11, PropositionalFormula.fromLiteral(true));
-    }
 
         private void checkPCs(final Function<Integer, PropositionalFormula> formulaGetter, final Map<Integer, PropositionalFormula> expectedValues) {
             for(int lineNumber : expectedValues.keySet()) {
@@ -41,16 +25,29 @@ public class ExtractionTest {
         }
 
         @Test
-        public void linePresenceCondition() {
+        public void linePCIfElse() {
             FileGT fileGT = VEVOS.extractFileGT(IF_ELSE_PATH);
-            checkPCs(fileGT::presenceCondition, IF_ELSE_PCs);
+            checkPCs(fileGT::presenceCondition, lineMapping(IF_ELSE_PCS));
         }
 
-        @Test
-        public void lineFeatureMapping() {
+    @Test
+    public void linePCNestedIf() {
+        FileGT fileGT = VEVOS.extractFileGT(NESTED_IF_PATH);
+        checkPCs(fileGT::presenceCondition, lineMapping(NESTED_IF_PCS));
+    }
+
+
+    @Test
+        public void lineFMIfElse() {
             FileGT fileGT = VEVOS.extractFileGT(IF_ELSE_PATH);
-            checkPCs(fileGT::featureMapping, IF_ELSE_PCs);
+            checkPCs(fileGT::featureMapping, lineMapping(IF_ELSE_FM));
         }
+
+    @Test
+    public void lineFMNestedIf() {
+        FileGT fileGT = VEVOS.extractFileGT(NESTED_IF_PATH);
+        checkPCs(fileGT::featureMapping, lineMapping(NESTED_IF_FM));
+    }
 
         @Test
         public void lineCodeMatching() {
@@ -95,5 +92,69 @@ public class ExtractionTest {
         @Test
         public void commitChangedFiles() {
 
+    }
+
+    private static PropositionalFormula formula(String formula) {
+        return PropositionalFormula.fromString(formula);
+    }
+    
+    private static PropositionalFormula formula() {
+        return PropositionalFormula.fromLiteral(true);
+    }
+    
+    private static Map<Integer, PropositionalFormula> lineMapping(List<PropositionalFormula> formulas) {
+        Map<Integer, PropositionalFormula> map = new HashMap<>();
+        for (int i = 0; i < formulas.size(); i++) {
+            map.put(i, formulas.get(i));
+        }
+        return map;
+    }
+
+
+    private static final Path IF_ELSE_PATH = Path.of("src/test/resources/extraction/ifelse.source");
+    private static final List<PropositionalFormula> IF_ELSE_PCS;
+    static {
+        IF_ELSE_PCS = new ArrayList<>();
+        IF_ELSE_PCS.add(formula());
+        IF_ELSE_PCS.add(formula());
+        IF_ELSE_PCS.add(formula());
+        IF_ELSE_PCS.add(formula());
+        IF_ELSE_PCS.add(formula());
+        IF_ELSE_PCS.add(formula("A"));
+        IF_ELSE_PCS.add(formula("A"));
+        IF_ELSE_PCS.add(formula("!A"));
+        IF_ELSE_PCS.add(formula("!A"));
+        IF_ELSE_PCS.add(formula("A"));
+        IF_ELSE_PCS.add(formula());
+        IF_ELSE_PCS.add(formula());
+    }
+    private static final List<PropositionalFormula> IF_ELSE_FM = IF_ELSE_PCS;
+
+    private static final Path NESTED_IF_PATH = Path.of("src/test/resources/extraction/nestedif.source");
+    private static final List<PropositionalFormula> NESTED_IF_PCS;
+    private static final List<PropositionalFormula> NESTED_IF_FM;
+
+    static {
+        NESTED_IF_PCS = new ArrayList<>();
+        NESTED_IF_PCS.add(formula());
+        NESTED_IF_PCS.add(formula("A"));
+        NESTED_IF_PCS.add(formula("A"));
+        NESTED_IF_PCS.add(formula("A && B"));
+        NESTED_IF_PCS.add(formula("A && B"));
+        NESTED_IF_PCS.add(formula("A && B"));
+        NESTED_IF_PCS.add(formula("A"));
+        NESTED_IF_PCS.add(formula("A"));
+        NESTED_IF_PCS.add(formula());
+
+        NESTED_IF_FM = new ArrayList<>();
+        NESTED_IF_FM.add(formula());
+        NESTED_IF_FM.add(formula("A"));
+        NESTED_IF_FM.add(formula("A"));
+        NESTED_IF_FM.add(formula("B"));
+        NESTED_IF_FM.add(formula("B"));
+        NESTED_IF_FM.add(formula("B"));
+        NESTED_IF_FM.add(formula("A"));
+        NESTED_IF_FM.add(formula("A"));
+        NESTED_IF_FM.add(formula());
     }
 }

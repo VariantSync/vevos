@@ -1,0 +1,9 @@
+line 1;
+#if A
+line 3;
+  #if B
+line 5;
+  #endif
+line 7;
+#endif
+line 9;
