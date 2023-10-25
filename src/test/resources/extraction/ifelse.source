@@ -1,0 +1,11 @@
+// A comment
+#include<something>
+
+line 4 without condition
+#if A
+    line 5;
+#else
+    line 7;
+#endif
+
+last line
