@@ -34,6 +34,24 @@ VEVOS uses DiffDetective to extract the feature mappings, presence conditions, a
 Due to the redesign of VEVOS, it is no longer capable of extracting feature models, which is a complex and error-prone task. 
 The feature model extraction capabilities can still be found in [VEVOS_Extraction][VEVOS_Extraction].
 
+# LICENSE
+
+VEVOS, a framework for simulating the evolution of clone-and-own variants
+Copyright (C) 2023 Alexander Schultheiß, Paul Maximilian Bittner, Thomas Thüm, 
+and Timo Kehrer
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the [GNU Lesser General Public License](LICENSE.LGPL3) as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 [VEVOS_Extraction]: https://github.com/VariantSync/VEVOS_Extraction
