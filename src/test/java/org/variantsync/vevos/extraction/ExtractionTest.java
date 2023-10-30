@@ -87,25 +87,25 @@ public class ExtractionTest {
     }
 
     @Test
-    public void linePCIfElse() {
+    public void filePCIfElse() {
         FileGT fileGT = VEVOS.extractFileGT(IF_ELSE_PATH);
         checkPCs(fileGT::presenceCondition, lineMapping(IF_ELSE_PCS));
     }
 
     @Test
-    public void linePCNestedIf() {
+    public void filePCNestedIf() {
         FileGT fileGT = VEVOS.extractFileGT(NESTED_IF_PATH);
         checkPCs(fileGT::presenceCondition, lineMapping(NESTED_IF_PCS));
     }
 
     @Test
-    public void lineFMIfElse() {
+    public void fileFMIfElse() {
         FileGT fileGT = VEVOS.extractFileGT(IF_ELSE_PATH);
         checkPCs(fileGT::featureMapping, lineMapping(IF_ELSE_FM));
     }
 
     @Test
-    public void lineFMNestedIf() {
+    public void fileFMNestedIf() {
         FileGT fileGT = VEVOS.extractFileGT(NESTED_IF_PATH);
         checkPCs(fileGT::featureMapping, lineMapping(NESTED_IF_FM));
     }
