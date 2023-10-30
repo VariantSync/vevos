@@ -4,7 +4,7 @@ import org.variantsync.vevos.error.NotImplementedException;
 
 import java.util.Set;
 
-public class FileGT {
+public class FileGroundTruth {
     public PropositionalFormula presenceCondition(int lineNumber) {
         throw new NotImplementedException();
     }
