@@ -1,8 +1,12 @@
 package org.variantsync.vevos.extraction;
 
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.variantsync.diffdetective.datasets.RepositoryLocationType;
+import org.variantsync.diffdetective.util.Assert;
+import org.variantsync.diffdetective.variation.diff.VariationDiff;
+import org.variantsync.diffdetective.variation.tree.VariationTree;
 import org.variantsync.vevos.VEVOS;
 import org.variantsync.vevos.common.*;
 
@@ -12,7 +16,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class ExtractionTest {
-
+    public static final CommitId COMMIT_WITH_CHANGES = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
+    private static final VEVOS vevos = new VEVOS();
     private static final Path IF_ELSE_PATH = Path.of("src/test/resources/extraction/ifelse.source");
     private static final List<PropositionalFormula> IF_ELSE_PCS;
     private static final List<PropositionalFormula> IF_ELSE_FM;
@@ -21,7 +26,6 @@ public class ExtractionTest {
     private static final List<PropositionalFormula> NESTED_IF_FM;
     private static final Path TEST_REPO_PATH = Path.of("src/test/resources/extraction/test_repo.zip");
     private static final RepositoryLocation TEST_REPO_LOCATION = new RepositoryLocation(RepositoryLocationType.FROM_ZIP, TEST_REPO_PATH.toString(), "TestRepo");
-
 
     static {
         IF_ELSE_PCS = new ArrayList<>();
@@ -113,38 +117,38 @@ public class ExtractionTest {
 
     @Test
     public void filePCDirectIfElse() {
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(IF_ELSE_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(IF_ELSE_PATH);
         checkPCs(fileGroundTruth::presenceCondition, lineMapping(IF_ELSE_PCS));
     }
 
     @Test
     public void filePCDirectNestedIf() {
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(NESTED_IF_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(NESTED_IF_PATH);
         checkPCs(fileGroundTruth::presenceCondition, lineMapping(NESTED_IF_PCS));
     }
 
     @Test
     public void fileFMDirectIfElse() {
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(IF_ELSE_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(IF_ELSE_PATH);
         checkPCs(fileGroundTruth::featureMapping, lineMapping(IF_ELSE_FM));
     }
 
     @Test
     public void fileFMDirectNestedIf() {
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(NESTED_IF_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(NESTED_IF_PATH);
         checkPCs(fileGroundTruth::featureMapping, lineMapping(NESTED_IF_FM));
     }
 
     @Test
     public void fileFeaturesDirectIfElse() {
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(IF_ELSE_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(IF_ELSE_PATH);
         Set<Feature> features = fileGroundTruth.features();
         check_if_else_features(features);
     }
 
     @Test
     public void fileFeaturesDirectNestedIf() {
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(NESTED_IF_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(NESTED_IF_PATH);
         Set<Feature> features = fileGroundTruth.features();
         check_nested_if_path_features(features);
     }
@@ -152,40 +156,35 @@ public class ExtractionTest {
     @Test
     public void filePCFromRepoIfElse() {
         // TODO
-        CommitId commitId = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(TEST_REPO_LOCATION, commitId, IF_ELSE_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES, IF_ELSE_PATH);
         checkPCs(fileGroundTruth::presenceCondition, lineMapping(IF_ELSE_PCS));
     }
 
     @Test
     public void filePCFromRepoNestedIf() {
         // TODO
-        CommitId commitId = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(TEST_REPO_LOCATION, commitId, NESTED_IF_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES, NESTED_IF_PATH);
         checkPCs(fileGroundTruth::presenceCondition, lineMapping(NESTED_IF_PCS));
     }
 
     @Test
     public void fileFMFromRepoIfElse() {
         // TODO
-        CommitId commitId = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(TEST_REPO_LOCATION, commitId, IF_ELSE_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES, IF_ELSE_PATH);
         checkPCs(fileGroundTruth::featureMapping, lineMapping(IF_ELSE_FM));
     }
 
     @Test
     public void fileFMFromRepoNestedIf() {
         // TODO
-        CommitId commitId = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(TEST_REPO_LOCATION, commitId, NESTED_IF_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES, NESTED_IF_PATH);
         checkPCs(fileGroundTruth::featureMapping, lineMapping(NESTED_IF_FM));
     }
 
     @Test
     public void fileFeaturesFromRepoIfElse() {
         // TODO
-        CommitId commitId = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(TEST_REPO_LOCATION, commitId, IF_ELSE_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES, IF_ELSE_PATH);
         Set<Feature> features = fileGroundTruth.features();
         check_if_else_features(features);
     }
@@ -193,9 +192,56 @@ public class ExtractionTest {
     @Test
     public void fileFeaturesFromRepoNestedIf() {
         // TODO
-        CommitId commitId = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
-        FileGroundTruth fileGroundTruth = VEVOS.extractFileGT(TEST_REPO_LOCATION, commitId, NESTED_IF_PATH);
+        FileGroundTruth fileGroundTruth = vevos.extractFileGT(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES, NESTED_IF_PATH);
         Set<Feature> features = fileGroundTruth.features();
+        check_nested_if_path_features(features);
+    }
+
+    @Test
+    public void filePCFromCommitGTIfElse() {
+        // TODO
+        CommitGroundTruth groundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        FileGroundTruth fileGT = groundTruth.fileGroundTruth(IF_ELSE_PATH);
+        checkPCs(fileGT::presenceCondition, lineMapping(IF_ELSE_PCS));
+    }
+
+    @Test
+    public void filePCFromCommitGTNestedIf() {
+        // TODO
+        CommitGroundTruth groundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        FileGroundTruth fileGT = groundTruth.fileGroundTruth(NESTED_IF_PATH);
+        checkPCs(fileGT::presenceCondition, lineMapping(NESTED_IF_PCS));
+    }
+
+    @Test
+    public void fileFMFromCommitGTIfElse() {
+        // TODO
+        CommitGroundTruth groundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        FileGroundTruth fileGT = groundTruth.fileGroundTruth(IF_ELSE_PATH);
+        checkPCs(fileGT::featureMapping, lineMapping(IF_ELSE_FM));
+    }
+
+    @Test
+    public void fileFMFromCommitGTNestedIf() {
+        // TODO
+        CommitGroundTruth groundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        FileGroundTruth fileGT = groundTruth.fileGroundTruth(NESTED_IF_PATH);
+        checkPCs(fileGT::featureMapping, lineMapping(NESTED_IF_FM));
+    }
+
+    @Test
+    public void fileFeaturesFromCommitGTIfElse() {
+        // TODO
+        CommitGroundTruth groundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        Set<Feature> features = groundTruth.fileGroundTruth(IF_ELSE_PATH).features();
+        check_if_else_features(features);
+    }
+
+    @Test
+    public void fileFeaturesFromCommitGTNestedIf() {
+        // TODO
+        CommitGroundTruth groundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        Set<Feature> features = groundTruth.fileGroundTruth(NESTED_IF_PATH).features();
         check_nested_if_path_features(features);
     }
 
@@ -205,20 +251,37 @@ public class ExtractionTest {
     }
 
     @Test
-    public void commitGroundTruth() {
-
+    public void changedFiles() {
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        List<Path> changedFiles = commitGroundTruth.changedFiles();
+        // TODO
     }
 
     @Test
-    public void commitChangedFiles() {
+    public void unchangedFiles() {
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        List<Path> unchangedFiles = commitGroundTruth.unchangedFiles();
+        // TODO
+    }
 
+    @Test
+    public void variationDiff() {
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        VariationDiff<MatchedNode> variationDiff = commitGroundTruth.variationDiff(IF_ELSE_PATH.getFileName());
+        // TODO
+    }
+
+    @Test
+    public void variationTree() {
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        VariationTree<MatchedNode> variationDiff = commitGroundTruth.variationTree(IF_ELSE_PATH.getFileName());
+        // TODO
     }
 
     @Test
     public void matchingBefore() {
         // TODO
-        CommitId commit = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
-        CommitGroundTruth commitGroundTruth = VEVOS.extractCommitGroundTruth(TEST_REPO_LOCATION, commit);
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
         CodeMatching matching = commitGroundTruth.codeMatching();
         // TODO
         checkMatching(matching::beforeToAfterMatch, null, IF_ELSE_PATH.getFileName());
@@ -227,8 +290,7 @@ public class ExtractionTest {
     @Test
     public void matchingAfter() {
         // TODO
-        CommitId commit = new CommitId("2cad77f2628ba792734c24e2034b47690a3976c6");
-        CommitGroundTruth commitGroundTruth = VEVOS.extractCommitGroundTruth(TEST_REPO_LOCATION, commit);
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
         CodeMatching matching = commitGroundTruth.codeMatching();
         // TODO
         checkMatching(matching::afterToBeforeMatch, null, IF_ELSE_PATH.getFileName());
@@ -237,5 +299,23 @@ public class ExtractionTest {
     @Test
     public void matchingOfUnchangedFile() {
         // TODO
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        CodeMatching matching = commitGroundTruth.codeMatching();
+        // TODO
+        checkMatching(matching::afterToBeforeMatch, null, Path.of("unchanged.c"));
+    }
+
+    @Test
+    public void commitMessage() {
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        RevCommit commit = commitGroundTruth.commit();
+        Assert.assertEquals("changes", commit.getFullMessage().trim());
+    }
+
+    @Test
+    public void jGitCommit() {
+        CommitGroundTruth commitGroundTruth = vevos.extractCommitGroundTruth(TEST_REPO_LOCATION, COMMIT_WITH_CHANGES);
+        RevCommit commit = commitGroundTruth.commit();
+        Assert.assertEquals(COMMIT_WITH_CHANGES.id(), commit.getName());
     }
 }
